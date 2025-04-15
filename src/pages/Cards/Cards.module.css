@@ -1,0 +1,14 @@
+.container {
+    border: solid;
+    border-radius: 8px;
+    padding: 80px;
+    display: grid;
+    gap: 30px;
+    width: 750px;
+    justify-items: center;
+}
+
+.card {
+    border: solid;
+    border-radius: 8px;
+}

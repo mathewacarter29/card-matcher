@@ -5,6 +5,7 @@ type CardSettings = {
   height: string;
   width: string;
   index: number;
+  color: string;
 };
 
 interface CardProps {
@@ -18,7 +19,7 @@ const Card = (props: CardProps) => {
 
   const clicked = () => {
     setIsClicked(true);
-    setColor("red");
+    setColor(card.color);
     console.log("clicked", card.index);
   };
 
@@ -34,15 +35,21 @@ const Card = (props: CardProps) => {
 const Cards = () => {
   const NUM_CARDS = 20;
   const NUM_COLUMNS = 4;
+  // length of this array should be half NUM_CARDS
+  const COLORS = ["red", "blue", "orange", "yellow", "green", "blue", "purple", "black", "turquoise", "pink"];
 
   const initCards = () => {
     let init: CardSettings[] = [];
+    let colorList = COLORS.concat(COLORS);
     for (let i = 0; i < NUM_CARDS; i++) {
+      const colorIndex = Math.floor(Math.random() * colorList.length);
       init.push({
         height: "100px",
         width: "70px",
         index: i,
+        color: colorList[colorIndex]
       });
+      colorList.splice(colorIndex, 1);
     }
     return init;
   };

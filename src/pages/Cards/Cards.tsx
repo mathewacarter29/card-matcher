@@ -36,7 +36,7 @@ const Cards = () => {
   const NUM_CARDS = 20;
   const NUM_COLUMNS = 4;
   // length of this array should be half NUM_CARDS
-  const COLORS = ["red", "blue", "orange", "yellow", "green", "blue", "purple", "black", "turquoise", "pink"];
+  const COLORS = ["red", "blue", "orange", "yellow", "green", "maroon", "purple", "black", "turquoise", "pink"];
 
   const initCards = () => {
     let init: CardSettings[] = [];

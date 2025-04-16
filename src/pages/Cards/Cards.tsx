@@ -1,26 +1,31 @@
 import classes from "./Cards.module.css";
 import { useState } from "react";
 
-interface CardSettings {
+type CardSettings = {
   height: string;
   width: string;
   index: number;
+};
+
+interface CardProps {
+  card: CardSettings;
 }
 
-const Card = (props: CardSettings) => {
+const Card = (props: CardProps) => {
+  const { card } = props;
   const [isClicked, setIsClicked] = useState(false);
-  const [color, setColor] = useState('gray');
+  const [color, setColor] = useState("gray");
 
   const clicked = () => {
     setIsClicked(true);
-    setColor('red')
-    console.log("clicked", props.index);
+    setColor("red");
+    console.log("clicked", card.index);
   };
 
   return (
     <div
       className={classes.card}
-      style={{ height: props.height, width: props.width, backgroundColor: color }}
+      style={{ height: card.height, width: card.width, backgroundColor: color }}
       onClick={() => clicked()}
     ></div>
   );
@@ -36,7 +41,7 @@ const Cards = () => {
       init.push({
         height: "100px",
         width: "70px",
-        index: i
+        index: i,
       });
     }
     return init;
@@ -50,14 +55,7 @@ const Cards = () => {
       style={{ gridTemplateColumns: "auto ".repeat(NUM_COLUMNS) }}
     >
       {cards.map((cardProp) => {
-        return (
-          <Card
-            key={cardProp.index}
-            index={cardProp.index}
-            height={cardProp.height}
-            width={cardProp.width}
-          />
-        );
+        return <Card key={cardProp.index} card={cardProp} />;
       })}
     </div>
   );

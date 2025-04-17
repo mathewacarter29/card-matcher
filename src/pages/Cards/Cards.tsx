@@ -1,26 +1,25 @@
 import classes from "./Cards.module.css";
 import { useState } from "react";
 
+interface CardProps {
+  card: CardSettings;
+}
+
 type CardSettings = {
   height: string;
   width: string;
   index: number;
   color: string;
+  onClick: () => void;
 };
-
-interface CardProps {
-  card: CardSettings;
-}
 
 const Card = (props: CardProps) => {
   const { card } = props;
-  const [isClicked, setIsClicked] = useState(false);
   const [color, setColor] = useState("gray");
 
   const clicked = () => {
-    setIsClicked(true);
     setColor(card.color);
-    console.log("clicked", card.index);
+    card.onClick();
   };
 
   return (
@@ -38,6 +37,10 @@ const Cards = () => {
   // length of this array should be half NUM_CARDS
   const COLORS = ["red", "blue", "orange", "yellow", "green", "maroon", "purple", "black", "turquoise", "pink"];
 
+  const clickCard = (i: number) => {
+    console.log('clicked', i);
+  }
+
   const initCards = () => {
     let init: CardSettings[] = [];
     let colorList = COLORS.concat(COLORS);
@@ -47,7 +50,8 @@ const Cards = () => {
         height: "100px",
         width: "70px",
         index: i,
-        color: colorList[colorIndex]
+        color: colorList[colorIndex],
+        onClick: () => clickCard(i)
       });
       colorList.splice(colorIndex, 1);
     }

@@ -11,9 +11,11 @@ type CardSettings = {
   index: number;
   color: string;
   onClick: () => void;
+  isRevealed: boolean;
 };
 
 const Card = (props: CardProps) => {
+  const BACKGROUND_COLOR = "gray";
   const { card } = props;
   const [color, setColor] = useState("gray");
 
@@ -25,7 +27,11 @@ const Card = (props: CardProps) => {
   return (
     <div
       className={classes.card}
-      style={{ height: card.height, width: card.width, backgroundColor: color }}
+      style={{
+        height: card.height,
+        width: card.width,
+        backgroundColor: card.isRevealed ? color : BACKGROUND_COLOR,
+      }}
       onClick={() => clicked()}
     ></div>
   );
@@ -35,11 +41,24 @@ const Cards = () => {
   const NUM_CARDS = 20;
   const NUM_COLUMNS = 4;
   // length of this array should be half NUM_CARDS
-  const COLORS = ["red", "blue", "orange", "yellow", "green", "maroon", "purple", "black", "turquoise", "pink"];
+  const COLORS = [
+    "red",
+    "blue",
+    "orange",
+    "yellow",
+    "green",
+    "maroon",
+    "purple",
+    "black",
+    "turquoise",
+    "pink",
+  ];
 
   const clickCard = (i: number) => {
-    console.log('clicked', i);
-  }
+    console.log("clicked", i);
+    let newCards = [...cards];
+    newCards[i].isRevealed = true;
+  };
 
   const initCards = () => {
     let init: CardSettings[] = [];
@@ -51,7 +70,8 @@ const Cards = () => {
         width: "70px",
         index: i,
         color: colorList[colorIndex],
-        onClick: () => clickCard(i)
+        onClick: () => clickCard(i),
+        isRevealed: false,
       });
       colorList.splice(colorIndex, 1);
     }

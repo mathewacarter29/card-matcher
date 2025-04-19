@@ -65,16 +65,18 @@ const Cards = () => {
     setCards(newCards);
     let newSelected = [...selected, i];
     // if this is the first card clicked, then just reveal it
-    if (newSelected.length === 2) {
+    if (newSelected.length >= 2) {
+      setLoading(true);
       console.log("clicked second card");
       // if colors dont match, set them both to be unrevealed
       if (newCards[newSelected[0]].color !== newCards[newSelected[1]].color) {
         // sleep for 1 second
         await sleep(1000);
-        console.log('slept')
         // make both selected cards unrevealed
         newCards = cards.map((card, index) => {
-          return selected.includes(index) ? { ...card, isRevealed: false } : card;
+          return selected.includes(index)
+            ? { ...card, isRevealed: false }
+            : card;
         });
         setCards(newCards);
       }
@@ -82,6 +84,7 @@ const Cards = () => {
       newSelected = [];
     }
     setSelected(newSelected);
+    setLoading(false);
   };
 
   const initCards = () => {
@@ -103,11 +106,12 @@ const Cards = () => {
 
   const [cards, setCards] = useState<CardSettings[]>(() => initCards());
   const [selected, setSelected] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
 
   return (
     <div
       className={classes.container}
-      style={{ gridTemplateColumns: "auto ".repeat(NUM_COLUMNS) }}
+      style={{ gridTemplateColumns: "auto ".repeat(NUM_COLUMNS), pointerEvents: loading ? "none" : "auto"}}
     >
       {cards.map((cardProp) => {
         return (

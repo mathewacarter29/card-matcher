@@ -1,12 +1,18 @@
 import classes from "./Cards.module.css";
 import { useState } from "react";
 import { useStopwatch } from "react-timer-hook";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 interface CardProps {
   card: CardSettings;
   // NOTE: can't pass this function in at card initialization (cant go in CardSettings)
   // pass it in normally as a prop so it uses the new version of state every time
   onClick: (i: number) => void;
+  isSelected: boolean;
 }
 
 type CardSettings = {
@@ -19,7 +25,7 @@ type CardSettings = {
 
 const Card = (props: CardProps) => {
   const BACKGROUND_COLOR = "gray";
-  const { card, onClick } = props;
+  const { card, onClick, isSelected } = props;
 
   const clicked = () => {
     onClick(card.index);
@@ -32,6 +38,7 @@ const Card = (props: CardProps) => {
         height: card.height,
         width: card.width,
         backgroundColor: card.isRevealed ? card.color : BACKGROUND_COLOR,
+        opacity: isSelected ? "100%" : "40%",
       }}
       onClick={() => clicked()}
     ></div>
@@ -53,16 +60,19 @@ const TimerCounter = (props: TimerProps) => {
   const { time, count } = props;
 
   return (
-    <div className={classes.timer} style={{display: "flex", justifyContent: 'space-around'}}>
+    <div
+      className={classes.timer}
+      style={{ display: "flex", justifyContent: "space-around" }}
+    >
       <div>
         <span>{count} turns taken</span>
       </div>
-    <div>
-      <span>Time elapsed - </span>
-      <span>{String(time.hours).padStart(2, "0")}</span>:
-      <span>{String(time.minutes).padStart(2, "0")}</span>:
-      <span>{String(time.seconds).padStart(2, "0")}</span>
-    </div>
+      <div>
+        <span>Time elapsed - </span>
+        <span>{String(time.hours).padStart(2, "0")}</span>:
+        <span>{String(time.minutes).padStart(2, "0")}</span>:
+        <span>{String(time.seconds).padStart(2, "0")}</span>
+      </div>
     </div>
   );
 };
@@ -118,6 +128,7 @@ const Cards = () => {
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);
+  const [isWinner, setIsWinner] = useState(false);
 
   async function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -125,6 +136,13 @@ const Cards = () => {
 
   const incrementCount = () => {
     setCount((prevCount) => (prevCount += 1));
+  };
+
+  const timeFormatter = (hours: number, minutes: number, seconds: number) => {
+    return `${String(hours).padStart(2, "0")}h:${String(minutes).padStart(
+      2,
+      "0"
+    )}m:${String(seconds).padStart(2, "0")}s`;
   };
 
   const clickCard = async (i: number) => {
@@ -136,15 +154,15 @@ const Cards = () => {
     });
     setCards(newCards);
     let newSelected = [...selected, i];
+    setSelected(newSelected);
     // if this is the first card clicked, then just reveal it
     if (newSelected.length >= 2) {
       incrementCount();
       setLoading(true);
-      console.log("clicked second card");
       // if colors dont match, set them both to be unrevealed
+      // sleep for 1 second
+      await sleep(1000);
       if (newCards[newSelected[0]].color !== newCards[newSelected[1]].color) {
-        // sleep for 1 second
-        await sleep(1000);
         // make both selected cards unrevealed
         newCards = cards.map((card, index) => {
           return selected.includes(index)
@@ -152,9 +170,13 @@ const Cards = () => {
             : card;
         });
         setCards(newCards);
-      } else if (newCards.every((card) => card.isRevealed)) { // cards are a match - check if they are all revealed
-        // all cards are revealed, we have a winner!
-        pause();
+      } else {
+        // cards are a match
+        if (newCards.every((card) => card.isRevealed)) {
+          // all cards are revealed, we have a winner!
+          pause();
+          setIsWinner(true);
+        }
       }
       // unselect these cards
       newSelected = [];
@@ -163,7 +185,7 @@ const Cards = () => {
     setLoading(false);
   };
 
-  const onGoBack = () => {
+  const onRestart = () => {
     setLoading(true);
     setCards(initCards());
     setSelected([]);
@@ -174,6 +196,45 @@ const Cards = () => {
 
   return (
     <div className={classes.container}>
+      <Dialog
+        open={isWinner}
+        onClose={() => setIsWinner(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">You're a winner!</DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            className={classes.timer}
+          >
+            <span>Turns taken: {count}</span>
+            <br />
+            <span>Time elapsed: </span>
+            <span>{timeFormatter(hours, minutes, seconds)}</span>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <button
+            onClick={() => {
+              setIsWinner(false);
+              onRestart();
+              // TODO to go home screen
+            }}
+          >
+            Home
+          </button>
+          <button
+            onClick={() => {
+              setIsWinner(false);
+              onRestart();
+            }}
+            autoFocus
+          >
+            Play again
+          </button>
+        </DialogActions>
+      </Dialog>
       <TimerCounter
         time={{
           hours,
@@ -186,16 +247,21 @@ const Cards = () => {
         className={classes.board}
         style={{
           gridTemplateColumns: "auto ".repeat(NUM_COLUMNS),
-          pointerEvents: loading ? "none" : "auto",
+          pointerEvents: loading || isWinner ? "none" : "auto",
         }}
       >
         {cards.map((cardProp) => {
           return (
-            <Card key={cardProp.index} card={cardProp} onClick={clickCard} />
+            <Card
+              key={cardProp.index}
+              card={cardProp}
+              onClick={clickCard}
+              isSelected={selected.includes(cardProp.index)}
+            />
           );
         })}
       </div>
-      <button onClick={() => onGoBack()}>Go back</button>
+      <button onClick={() => onRestart()}>Go back</button>
     </div>
   );
 };

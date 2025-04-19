@@ -131,7 +131,7 @@ const Cards = () => {
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);
-  const [isWinner, setIsWinner] = useState(true);
+  const [isWinner, setIsWinner] = useState(false);
 
   /**
    * Helper function for card clicker function

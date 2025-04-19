@@ -23,6 +23,11 @@ type CardSettings = {
   isRevealed: boolean;
 };
 
+/**
+ * One single card on the board
+ * @param props info for styling of the card
+ * @returns One color card
+ */
 const Card = (props: CardProps) => {
   const BACKGROUND_COLOR = "gray";
   const { card, onClick, isSelected } = props;
@@ -56,6 +61,11 @@ interface TimerProps {
   count: number;
 }
 
+/**
+ * Component for header of game board
+ * @param props contain timer info and count info
+ * @returns turn counter and timer
+ */
 const TimerCounter = (props: TimerProps) => {
   const { time, count } = props;
 
@@ -92,21 +102,21 @@ const Cards = () => {
     "black",
     "turquoise",
     "pink",
-  ];
+  ].slice(0, NUM_CARDS / 2);
 
   const {
-    // totalSeconds,
-    // milliseconds,
     seconds,
     minutes,
     hours,
-    // days,
-    // isRunning,
     start,
     pause,
     reset,
   } = useStopwatch();
 
+  /**
+   * Initialize cards on the board
+   * @returns cards on initial game board with randomized colors and all not revealed
+   */
   const initCards = () => {
     let init: CardSettings[] = [];
     let colorList = COLORS.concat(COLORS);
@@ -128,23 +138,50 @@ const Cards = () => {
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);
-  const [isWinner, setIsWinner] = useState(false);
+  const [isWinner, setIsWinner] = useState(true);
 
-  async function sleep(ms: number): Promise<void> {
+  /**
+   * Helper function for card clicker function
+   * @param ms number of milliseconds to sleep for
+   * @returns a promise you can await to wait for the given number of milliseconds
+   */
+  const sleep = (ms: number): Promise<void> => {
     return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  };
 
+  /**
+   * Increase the number of turns taken by 1
+   */
   const incrementCount = () => {
     setCount((prevCount) => (prevCount += 1));
   };
 
+  /**
+   * Format the time for the winner's dialog box
+   * @param hours number of hours it took to complete puzzle
+   * @param minutes number of minutes it took to complete puzzle
+   * @param seconds number of seconds it took to complete puzzle
+   * @returns a string representation of the time
+   */
   const timeFormatter = (hours: number, minutes: number, seconds: number) => {
-    return `${String(hours).padStart(2, "0")}h:${String(minutes).padStart(
-      2,
-      "0"
-    )}m:${String(seconds).padStart(2, "0")}s`;
+    const hourText = hours
+      ? `${String(hours)} hour${hours > 1 ? "s" : ""}, `
+      : "";
+    const minuteText =
+      hours || minutes
+        ? `${String(minutes)} minute${minutes > 1 ? "s" : ""}, `
+        : "";
+    const secondsText = `${String(seconds)} seconds`;
+    return `${hourText}${minuteText}${secondsText}`;
   };
 
+  /**
+   * What happens when a card is clicked
+   * 1. Flip it over
+   * 2. Check if its a match
+   * 3. Check if the game is over
+   * @param i index of what card was clicked
+   */
   const clickCard = async (i: number) => {
     if (count === 0) {
       start();
@@ -185,6 +222,9 @@ const Cards = () => {
     setLoading(false);
   };
 
+  /**
+   * Restart the game
+   */
   const onRestart = () => {
     setLoading(true);
     setCards(initCards());
@@ -201,13 +241,13 @@ const Cards = () => {
         onClose={() => setIsWinner(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        className={classes.timer}
       >
-        <DialogTitle id="alert-dialog-title">You're a winner!</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          <span>You're a winner!</span>
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-            className={classes.timer}
-          >
+          <DialogContentText id="alert-dialog-description">
             <span>Turns taken: {count}</span>
             <br />
             <span>Time elapsed: </span>
@@ -261,7 +301,7 @@ const Cards = () => {
           );
         })}
       </div>
-      <button onClick={() => onRestart()}>Go back</button>
+      <button onClick={() => onRestart()}>Restart</button>
     </div>
   );
 };

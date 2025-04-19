@@ -104,14 +104,7 @@ const Cards = () => {
     "pink",
   ].slice(0, NUM_CARDS / 2);
 
-  const {
-    seconds,
-    minutes,
-    hours,
-    start,
-    pause,
-    reset,
-  } = useStopwatch();
+  const { seconds, minutes, hours, start, pause, reset } = useStopwatch();
 
   /**
    * Initialize cards on the board
@@ -196,10 +189,9 @@ const Cards = () => {
     if (newSelected.length >= 2) {
       incrementCount();
       setLoading(true);
-      // if colors dont match, set them both to be unrevealed
-      // sleep for 1 second
-      await sleep(1000);
       if (newCards[newSelected[0]].color !== newCards[newSelected[1]].color) {
+        // sleep for 1 second
+        await sleep(1000);
         // make both selected cards unrevealed
         newCards = cards.map((card, index) => {
           return selected.includes(index)
@@ -213,6 +205,9 @@ const Cards = () => {
           // all cards are revealed, we have a winner!
           pause();
           setIsWinner(true);
+        } else { // if they match but its not a winner, still sleep. we dont want to sleep when we win
+          // sleep for 1 second
+          await sleep(1000);
         }
       }
       // unselect these cards

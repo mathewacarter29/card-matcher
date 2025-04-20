@@ -33,7 +33,9 @@ const Card = (props: CardProps) => {
   const { card, onClick, isSelected } = props;
 
   const clicked = () => {
-    onClick(card.index);
+    if (!card.isRevealed) {
+      onClick(card.index);
+    }
   };
 
   return (

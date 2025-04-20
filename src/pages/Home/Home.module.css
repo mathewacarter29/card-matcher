@@ -1,0 +1,8 @@
+.buttonContainer button {
+    margin: 10px;
+    width: 150px;
+}
+
+.buttonContainer {
+    align-items: center;
+}

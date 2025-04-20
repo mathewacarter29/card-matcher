@@ -1,12 +1,12 @@
-import './App.css'
-import Cards from './pages/Cards/Cards'
+import "./App.css";
+import Home from "./pages/Home/Home";
 
 function App() {
   return (
     <div>
-      <Cards />
+      <Home />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

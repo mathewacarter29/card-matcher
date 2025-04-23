@@ -56,6 +56,7 @@ const Cards = (props: GameProps) => {
     "olive",
     "lime", // hard and expert
   ].slice(0, NUM_CARDS / 2);
+  const IS_EXPERT = difficulty === "expert";
 
   const { seconds, minutes, hours, start, pause, reset } = useStopwatch();
 
@@ -135,22 +136,28 @@ const Cards = (props: GameProps) => {
     let newCards = cards.map((card, index) => {
       return index == i ? { ...card, isRevealed: true } : card;
     });
-    setCards(newCards);
+    setCards(newCards); // reveal the newly clicked card
     let newSelected = [...selected, i];
     setSelected(newSelected);
-    // if this is the first card clicked, then just reveal it
     if (newSelected.length >= 2) {
       incrementCount();
       setLoading(true);
       if (newCards[newSelected[0]].color !== newCards[newSelected[1]].color) {
+        // cards are not the same
         // sleep for 1 second
         await sleep(1000);
         // make both selected cards unrevealed
-        newCards = cards.map((card, index) => {
-          return selected.includes(index)
+        newCards = newCards.map((card, index) => {
+          return newSelected.includes(index)
             ? { ...card, isRevealed: false }
             : card;
         });
+        if (IS_EXPERT) {
+          // if expert mode, turn over ALL cards upon wrong pair
+          newCards = newCards.map((card) => {
+            return card.isRevealed ? { ...card, isRevealed: false } : card;
+          });
+        }
         setCards(newCards);
       } else {
         // cards are a match
@@ -161,7 +168,9 @@ const Cards = (props: GameProps) => {
         } else {
           // if they match but its not a winner, still sleep. we dont want to sleep when we win
           // sleep for 1 second
-          await sleep(1000);
+          if (!IS_EXPERT) {
+            await sleep(1000);
+          }
         }
       }
       // unselect these cards

@@ -4,9 +4,15 @@ import classes from "./Home.module.css";
 
 const Home = () => {
   const [start, setStart] = useState(false);
-  const startGame = () => {
+  const [difficulty, setDifficulty] = useState('easy')
+  const startGame = (difficulty: string) => {
+    setDifficulty(difficulty);
     setStart(true);
   };
+
+  const returnHome = () => {
+    setStart(false);
+  }
 
   const Select = () => {
     return (
@@ -17,16 +23,16 @@ const Home = () => {
           className={classes.buttonContainer}
           style={{ display: "flex", flexDirection: "column" }}
         >
-          <button onClick={() => startGame()}>Easy</button>
-          <button onClick={() => startGame()}>Medium</button>
-          <button onClick={() => startGame()}>Hard</button>
-          <button onClick={() => startGame()}>Expert</button>
+          <button onClick={() => startGame('easy')}>Easy</button>
+          <button onClick={() => startGame('medium')}>Medium</button>
+          <button onClick={() => startGame('hard')}>Hard</button>
+          <button onClick={() => startGame('expert')}>Expert</button>
         </div>
       </div>
     );
   };
 
-  return <div>{start ? <Cards /> : <Select />}</div>;
+  return <div>{start ? <Cards difficulty={difficulty} returnHome={() => returnHome()}/> : <Select />}</div>;
 };
 
 export default Home;

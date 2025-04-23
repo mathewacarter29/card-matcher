@@ -89,21 +89,46 @@ const TimerCounter = (props: TimerProps) => {
   );
 };
 
-const Cards = () => {
-  const NUM_CARDS = 20;
-  const NUM_COLUMNS = 4;
+interface GameProps {
+  difficulty: string;
+  returnHome: () => void;
+}
+
+const Cards = (props: GameProps) => {
+  const { difficulty, returnHome } = props;
+  const setGameParams = (level: string): [number, number] => {
+    switch (level) {
+      case "easy":
+        return [12, 4];
+      case "medium":
+        return [20, 5];
+      case "hard":
+        return [30, 6];
+      case "expert":
+        return [30, 6];
+      default:
+        console.log("unknown difficulty level");
+        return [20, 5];
+    }
+  };
+  const [NUM_CARDS, NUM_COLUMNS] = setGameParams(difficulty);
   // length of this array should be half NUM_CARDS
   const COLORS = [
     "red",
-    "blue",
     "orange",
     "yellow",
     "green",
-    "maroon",
-    "purple",
+    "blue",
+    "purple", // easy
     "black",
-    "turquoise",
-    "pink",
+    "cyan",
+    "white",
+    "magenta", // medium
+    "maroon",
+    "brown",
+    "navy",
+    "olive",
+    "lime", // hard and expert
   ].slice(0, NUM_CARDS / 2);
 
   const { seconds, minutes, hours, start, pause, reset } = useStopwatch();
@@ -207,7 +232,8 @@ const Cards = () => {
           // all cards are revealed, we have a winner!
           pause();
           setIsWinner(true);
-        } else { // if they match but its not a winner, still sleep. we dont want to sleep when we win
+        } else {
+          // if they match but its not a winner, still sleep. we dont want to sleep when we win
           // sleep for 1 second
           await sleep(1000);
         }
@@ -224,11 +250,16 @@ const Cards = () => {
    */
   const onRestart = () => {
     setLoading(true);
+    setIsWinner(false);
     setCards(initCards());
     setSelected([]);
     reset();
     setCount(0);
     setLoading(false);
+  };
+
+  const goHome = () => {
+    returnHome();
   };
 
   return (
@@ -254,16 +285,13 @@ const Cards = () => {
         <DialogActions>
           <button
             onClick={() => {
-              setIsWinner(false);
-              onRestart();
-              // TODO to go home screen
+              goHome();
             }}
           >
             Home
           </button>
           <button
             onClick={() => {
-              setIsWinner(false);
               onRestart();
             }}
             autoFocus
@@ -298,7 +326,17 @@ const Cards = () => {
           );
         })}
       </div>
-      <button onClick={() => onRestart()}>Restart</button>
+      <div
+        style={{
+          width: "30%",
+          margin: "auto",
+          display: "flex",
+          justifyContent: "space-around",
+        }}
+      >
+        <button onClick={() => goHome()}>Go Back</button>
+        <button onClick={() => onRestart()}>Restart</button>
+      </div>
     </div>
   );
 };

@@ -6,88 +6,14 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
-interface CardProps {
-  card: CardSettings;
-  // NOTE: can't pass this function in at card initialization (cant go in CardSettings)
-  // pass it in normally as a prop so it uses the new version of state every time
-  onClick: (i: number) => void;
-  isSelected: boolean;
-}
-
-type CardSettings = {
-  height: string;
-  width: string;
-  index: number;
-  color: string;
-  isRevealed: boolean;
-};
-
-/**
- * One single card on the board
- * @param props info for styling of the card
- * @returns One color card
- */
-const Card = (props: CardProps) => {
-  const BACKGROUND_COLOR = "gray";
-  const { card, onClick, isSelected } = props;
-
-  const clicked = () => {
-    if (!card.isRevealed) {
-      onClick(card.index);
-    }
-  };
-
-  return (
-    <div
-      className={classes.card}
-      style={{
-        height: card.height,
-        width: card.width,
-        backgroundColor: card.isRevealed ? card.color : BACKGROUND_COLOR,
-        opacity: isSelected ? "100%" : "40%",
-      }}
-      onClick={() => clicked()}
-    ></div>
-  );
-};
-
-type TimerSettings = {
-  minutes: number;
-  seconds: number;
-  hours: number;
-};
-
-interface TimerProps {
-  time: TimerSettings;
-  count: number;
-}
+import TimerCounter from "./TimerCounter/TimerCounter";
+import { Card, CardSettings } from "./Card/Card";
 
 /**
  * Component for header of game board
  * @param props contain timer info and count info
  * @returns turn counter and timer
  */
-const TimerCounter = (props: TimerProps) => {
-  const { time, count } = props;
-
-  return (
-    <div
-      className={classes.timer}
-      style={{ display: "flex", justifyContent: "space-around" }}
-    >
-      <div>
-        <span>{count} turns taken</span>
-      </div>
-      <div>
-        <span>Time elapsed - </span>
-        <span>{String(time.hours).padStart(2, "0")}</span>:
-        <span>{String(time.minutes).padStart(2, "0")}</span>:
-        <span>{String(time.seconds).padStart(2, "0")}</span>
-      </div>
-    </div>
-  );
-};
 
 interface GameProps {
   difficulty: string;

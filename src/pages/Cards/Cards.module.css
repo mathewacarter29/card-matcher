@@ -12,13 +12,3 @@
     width: 750px;
     justify-items: center;
 }
-
-.card {
-    border: solid;
-    border-radius: 8px;
-}
-
-.timer span {
-    font-size: 1.17em;
-    font-weight: bold;
-}

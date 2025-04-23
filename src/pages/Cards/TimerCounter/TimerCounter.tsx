@@ -1,4 +1,4 @@
-import classes from './TimerCounter.module.css';
+import classes from "./TimerCounter.module.css";
 
 interface TimerProps {
   time: TimerSettings;

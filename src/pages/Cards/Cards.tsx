@@ -51,7 +51,7 @@ const Cards = (props: GameProps) => {
     "white",
     "magenta", // medium
     "maroon",
-    "brown",
+    "chocolate",
     "navy",
     "olive",
     "lime", // hard and expert
